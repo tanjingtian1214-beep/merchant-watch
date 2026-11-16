@@ -1,0 +1,15 @@
+[Unit]
+Description=Run Roco Kingdom World merchant monitor every 4 hours (08/12/16/20 Beijing time)
+
+[Timer]
+# 远行商人每日四轮刷新：08:00 / 12:00 / 16:00 / 20:00（北京时间）
+# 统一设为各轮次后 3 分钟，给源站留出切换时间
+OnCalendar=*-*-* 08,12,16,20:03:00
+# 机器关机/重启错过的任务，开机后自动补跑（catch-up）
+Persistent=true
+AccuracySec=1s
+RandomizedDelaySec=0
+Unit=merchant-watch.service
+
+[Install]
+WantedBy=timers.target

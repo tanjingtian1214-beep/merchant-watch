@@ -1,0 +1,29 @@
+[Unit]
+Description=Roco Kingdom World - Remote Merchant Monitor
+Documentation=https://github.com/your-account/merchant-watch
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/merchant-watch
+ExecStart=/usr/bin/python3 /opt/merchant-watch/merchant_watch_cloud.py
+# 凭据请写入 /etc/merchant-watch/env（权限 600），不要直接写在本文件
+EnvironmentFile=-/etc/merchant-watch/env
+# 状态文件需可写（用于跨轮次去重与漏轮检测）
+StateDirectory=merchant-watch
+Environment=MERCHANT_STATE_FILE=/var/lib/merchant-watch/state.json
+# 运行超时（源站不可达时不拖住系统）
+TimeoutStartSec=300
+Restart=no
+User=merchant-watch
+Group=merchant-watch
+# 安全加固
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/merchant-watch
+
+[Install]
+WantedBy=multi-user.target
