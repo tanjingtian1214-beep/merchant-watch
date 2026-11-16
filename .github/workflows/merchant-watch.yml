@@ -1,0 +1,34 @@
+name: 洛克王国远行商人监控
+on:
+  schedule:
+    - cron: '3 0,4,8,12 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_AUTH_CODE: ${{ secrets.SMTP_AUTH_CODE }}
+      MERCHANT_STATE_FILE: state/merchant_state.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: merchant-watch-state-${{ github.run_id }}
+          restore-keys: merchant-watch-state-
+      - name: Run monitor
+        run: |
+          mkdir -p state
+          python merchant_watch_cloud.py
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: state
+          key: merchant-watch-state-${{ github.run_id }}
